@@ -9,6 +9,11 @@ class Kleopatra < Formula
   license all_of: ["GPL-2.0-only", "GPL-3.0-only", "LGPL-2.1-only", "LGPL-3.0-only"]
   keg_only "not linked to prevent conflicts with any gpgme or kde libs"
 
+  bottle do
+    root_url "https://github.com/simple-is-hard/homebrew-apps/releases/download/1"
+    sha256 monterey: "6766b0a06f5942ba55d00fe1043045264e82d31ed258d550befab40d0a9a8d5a"
+  end
+
   depends_on "cmake" => :build
   depends_on "extra-cmake-modules" => :build
   depends_on "pkg-config" => :build
