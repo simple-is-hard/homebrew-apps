@@ -23,6 +23,8 @@ class Kleopatra < Formula
   depends_on "libgpg-error"
   depends_on "qt@5"
 
+  uses_from_macos "zip"
+
   # qgpgme, gpgmepp
   resource "gpgme" do
     url "https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.17.1.tar.bz2"
@@ -344,5 +346,39 @@ class Kleopatra < Formula
   test do
     k = "/usr/local/opt/kleopatra/Applications/KDE/kleopatra.app/Contents/MacOS/kleopatra"
     system k, "--help"
+  end
+
+  def caveats
+    <<~EOS
+      After Installing:
+
+      Make sure dbus is running
+        brew services start dbus
+
+      There is a clean PATH method below to run 'kleopatra',
+      but it is also ok to create a quick symlink using
+        ln -s /usr/local/opt/kleopatra/bin/kleopatra /usr/local/bin/
+
+      If you want to add an application to the Launchpad
+        cd /Applications && unzip /usr/local/opt/kleopatra/app.zip
+
+    EOS
+  end
+
+  def post_install
+    link = "/usr/local/opt/kleopatra/zip-link/kleopatra.app"
+    src = "/usr/local/opt/kleopatra/Applications/KDE/kleopatra.app"
+
+    chdir src do
+      system "sh", "-c", "find . | while read a; do if [ -d $a ]; then
+        mkdir -p #{link}/$a; else ln -sf #{src}/$a #{link}/$a; fi; done"
+    end
+
+    chdir "/usr/local/opt/kleopatra/zip-link" do
+      system "zip", "-ry", "/usr/local/opt/kleopatra/app.zip", "."
+    end
+
+    system "ln", "-sf", "#{src}/Contents/MacOS/kleopatra",
+      "/usr/local/opt/kleopatra/bin/kleopatra"
   end
 end
