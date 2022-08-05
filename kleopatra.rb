@@ -11,17 +11,22 @@ class Kleopatra < Formula
 
   bottle do
     root_url "https://github.com/simple-is-hard/homebrew-apps/releases/download/1"
-    sha256 monterey: "6766b0a06f5942ba55d00fe1043045264e82d31ed258d550befab40d0a9a8d5a"
+    sha256 monterey:       "6766b0a06f5942ba55d00fe1043045264e82d31ed258d550befab40d0a9a8d5a"
+    sha256 arm64_monterey: "49a9a39309b7d5c05429a9c85d027c6f36f37f45e161cae2315f2f93920c2cc5"
   end
 
+  depends_on "boost" => :build
   depends_on "cmake" => :build
   depends_on "extra-cmake-modules" => :build
   depends_on "pkg-config" => :build
 
+  depends_on "dbus"
+  depends_on "docbook-xsl"
   depends_on "gnupg"
   depends_on "libassuan"
   depends_on "libgpg-error"
   depends_on "qt@5"
+  depends_on "zstd"
 
   uses_from_macos "zip"
 
@@ -341,10 +346,13 @@ class Kleopatra < Formula
 
     kleopatra = "#{prefix}/Applications/KDE/kleopatra.app/Contents/MacOS/kleopatra"
     system "install_name_tool", "-add_rpath", "#{prefix}/lib", kleopatra
+
+    # this fixes loading of libdbus in runtime from qt on apple m1
+    system "install_name_tool", "-add_rpath", "#{HOMEBREW_PREFIX}/lib", kleopatra
   end
 
   test do
-    k = "/usr/local/opt/kleopatra/Applications/KDE/kleopatra.app/Contents/MacOS/kleopatra"
+    k = "#{prefix}/Applications/KDE/kleopatra.app/Contents/MacOS/kleopatra"
     system k, "--help"
   end
 
@@ -357,28 +365,28 @@ class Kleopatra < Formula
 
       There is a clean PATH method below to run 'kleopatra',
       but it is also ok to create a quick symlink using
-        ln -s /usr/local/opt/kleopatra/bin/kleopatra /usr/local/bin/
+        ln -s #{opt_prefix}/bin/kleopatra #{HOMEBREW_PREFIX}/bin/
 
       If you want to add an application to the Launchpad
-        cd /Applications && unzip /usr/local/opt/kleopatra/app.zip
+        cd /Applications && unzip #{opt_prefix}/app.zip
 
     EOS
   end
 
   def post_install
-    link = "/usr/local/opt/kleopatra/zip-link/kleopatra.app"
-    src = "/usr/local/opt/kleopatra/Applications/KDE/kleopatra.app"
+    link = "#{opt_prefix}/zip-link/kleopatra.app"
+    src = "#{opt_prefix}/Applications/KDE/kleopatra.app"
 
     chdir src do
       system "sh", "-c", "find . | while read a; do if [ -d $a ]; then
         mkdir -p #{link}/$a; else ln -sf #{src}/$a #{link}/$a; fi; done"
     end
 
-    chdir "/usr/local/opt/kleopatra/zip-link" do
-      system "zip", "-ry", "/usr/local/opt/kleopatra/app.zip", "."
+    chdir "#{opt_prefix}/zip-link" do
+      system "zip", "-ry", "#{opt_prefix}/app.zip", "."
     end
 
     system "ln", "-sf", "#{src}/Contents/MacOS/kleopatra",
-      "/usr/local/opt/kleopatra/bin/kleopatra"
+      "#{opt_prefix}/bin/kleopatra"
   end
 end
