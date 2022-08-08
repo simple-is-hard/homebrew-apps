@@ -383,7 +383,8 @@ class Kleopatra < Formula
     end
 
     chdir "#{opt_prefix}/zip-link" do
-      system "zip", "-ry", "#{opt_prefix}/app.zip", "."
+      # not keeping symlinks, symlinks are ok with launchpad, but not with spotlight
+      system "zip", "-r", "#{opt_prefix}/app.zip", "."
     end
 
     system "ln", "-sf", "#{src}/Contents/MacOS/kleopatra",
