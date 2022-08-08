@@ -11,8 +11,8 @@ class Kleopatra < Formula
 
   bottle do
     root_url "https://github.com/simple-is-hard/homebrew-apps/releases/download/1"
-    sha256 monterey:       "6766b0a06f5942ba55d00fe1043045264e82d31ed258d550befab40d0a9a8d5a"
-    sha256 arm64_monterey: "49a9a39309b7d5c05429a9c85d027c6f36f37f45e161cae2315f2f93920c2cc5"
+    sha256 monterey:       "5a3a4892a6ba475bd7e759dc08b4537182964b0fe650545c383aba921ad12803"
+    sha256 arm64_monterey: "b3a7b265427c680b16bf1dacc03ebf6b4c5c3a7d96d5fd13b067cc0b50946467"
   end
 
   depends_on "boost" => :build
