@@ -18,7 +18,9 @@ class Kleopatra < Formula
   depends_on "boost" => :build
   depends_on "cmake" => :build
   depends_on "extra-cmake-modules" => :build
+  depends_on "iso-codes" => :build
   depends_on "pkg-config" => :build
+  depends_on "python3" => :build
 
   depends_on "dbus"
   depends_on "docbook-xsl"
@@ -329,6 +331,10 @@ class Kleopatra < Formula
 
     inreplace "src/dialogs/certificatedetailswidget.cpp" do |s|
       s.gsub!(/ifdef USE_RANGES/, "if 0")
+    end
+
+    inreplace "src/view/padwidget.cpp" do |s|
+      s.gsub!(/QStringLiteral\(\"Monospace\"\)/, "QFontDatabase::systemFont(QFontDatabase::FixedFont)")
     end
 
     system "cmake", ".", *args
