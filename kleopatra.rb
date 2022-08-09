@@ -369,11 +369,16 @@ class Kleopatra < Formula
       Make sure dbus is running
         brew services start dbus
 
+      Select pinentry-mac as the default program
+        brew install pinentry-mac
+        echo "pinentry-program #{HOMEBREW_PREFIX}/bin/pinentry-mac" > ~/.gnupg/gpg-agent.conf
+        killall -9 gpg-agent
+
       There is a clean PATH method below to run 'kleopatra',
       but it is also ok to create a quick symlink using
         ln -s #{opt_prefix}/bin/kleopatra #{HOMEBREW_PREFIX}/bin/
 
-      If you want to add an application to the Launchpad
+      If you want to add this application to the Launchpad
         cd /Applications && unzip #{opt_prefix}/app.zip
 
     EOS
