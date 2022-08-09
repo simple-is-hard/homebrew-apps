@@ -380,16 +380,21 @@ class Kleopatra < Formula
   end
 
   def post_install
-    link = "#{opt_prefix}/zip-link/kleopatra.app"
+    zip = "#{opt_prefix}/zip/kleopatra.app"
     src = "#{opt_prefix}/Applications/KDE/kleopatra.app"
 
     chdir src do
       system "sh", "-c", "find . | while read a; do if [ -d $a ]; then
-        mkdir -p #{link}/$a; else ln -sf #{src}/$a #{link}/$a; fi; done"
+        mkdir -p #{zip}/$a; else cp #{src}/$a #{zip}/$a; fi; done"
     end
 
-    chdir "#{opt_prefix}/zip-link" do
-      # not keeping symlinks, symlinks are ok with launchpad, but not with spotlight
+    system "chmod", "+w", "#{zip}/Contents/MacOS/kleopatra"
+    File.write "#{zip}/Contents/MacOS/kleopatra", <<~EOS
+      #!/bin/sh
+      PATH=#{HOMEBREW_PREFIX}/bin:$PATH exec #{src}/Contents/MacOS/kleopatra
+    EOS
+
+    chdir "#{opt_prefix}/zip" do
       system "zip", "-r", "#{opt_prefix}/app.zip", "."
     end
 
